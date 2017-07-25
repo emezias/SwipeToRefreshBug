@@ -1,0 +1,22 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/kgo_fragment_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="android.modolabs.com.webviewbugdemo.FragmentWebviewActivity">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/pullToRefreshContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.modolabs.com.webviewbugdemo.KgouiWebView
+            android:id="@+id/boringWebView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:scrollbarStyle="insideOverlay" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</RelativeLayout>
