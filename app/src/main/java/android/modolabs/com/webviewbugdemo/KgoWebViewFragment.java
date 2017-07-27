@@ -40,7 +40,6 @@ public class KgoWebViewFragment extends Fragment implements SwipeRefreshLayout.O
     //Constants
     public static final String JS_EVENT_PREFIX = "var evt = document.createEvent('Event');\nevt.initEvent('";
     public static final String JS_EVENT_SUFFIX = "', false, false);\nwindow.dispatchEvent(evt);";
-    public static final String JS_SHOW_EVENT = "pageshow";
     public static final String JS_HIDE_EVENT = "pagehide";
     public static final String JSCRIPT = "javascript: ";
     public WebView mWebView;
