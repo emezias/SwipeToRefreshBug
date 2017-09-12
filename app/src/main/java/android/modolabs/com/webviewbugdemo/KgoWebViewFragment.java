@@ -166,7 +166,7 @@ public class KgoWebViewFragment extends Fragment implements SwipeRefreshLayout.O
      * This class runs the API call in the background
      * The connection listener methods finish the activity
      */
-    private class LoadPage extends AsyncTask<String, Void, Response> {
+    private class LoadPage extends AsyncTask<String, Void, String[]> {
 
         Snackbar loaderView;
 
@@ -180,14 +180,25 @@ public class KgoWebViewFragment extends Fragment implements SwipeRefreshLayout.O
             }
         }
 
-        protected Response doInBackground(String... params) {
+        protected String[] doInBackground(String... params) {
             //3 different places call connect on mUrl.getExternals String, set true so they don't double
             final String initialUrl = params[0];
             if (!TextUtils.isEmpty(initialUrl)) {
                 Log.d(TAG, "background connect call " + initialUrl);
                 //making blocking call, waiting for response
                 final Response response = OKConnection.makeBlockingRequest(getContext(), true, initialUrl);
-                return response;
+                final String[] returnArray = new String[4];
+                try {
+                    returnArray[0] = response.body().string();
+                    final String[] typeAndEncoding = splitContentTypeAndEncoding(response.body().contentType().toString());
+                    final String urlString = response.request().url().toString();
+                    returnArray[1] = typeAndEncoding[0];
+                    returnArray[2] = typeAndEncoding[1];
+                    returnArray[3] = urlString;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return returnArray;
             } else {
                 Log.e(TAG, "problem calling connect:" + initialUrl);
                 return null;
@@ -195,21 +206,13 @@ public class KgoWebViewFragment extends Fragment implements SwipeRefreshLayout.O
         }
 
         @Override
-        protected void onPostExecute(Response response) {
+        protected void onPostExecute(String[] response) {
             super.onPostExecute(response);
             if (isCancelled() || getActivity() == null || response == null) {
                 Log.e(TAG, "post execute cancels internal login");
                 return;
             }
-            try {
-                final String data = response.body().string();
-                final String[] params = splitContentTypeAndEncoding(response.body().contentType().toString());
-                final String urlString = response.request().url().toString();
-                mWebView.loadDataWithBaseURL(urlString, data, params[0], params[1], urlString);
-                ((FragmentWebviewActivity) getActivity()).mWebFragment = KgoWebViewFragment.this;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            mWebView.loadDataWithBaseURL(response[3], response[0], response[1], response[2], response[3]);
             if (!mPullToRefreshLayout.isRefreshing()) {
                 loaderView.dismiss();
             } else {
